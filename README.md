@@ -30,7 +30,7 @@ A powerful GUI application for managing and configuring Cisco switches with an i
 1. Ensure you have Python installed on your system
 2. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/cisco-switch-config-tool.git
+   git clone https://github.com/diyarit/cisco-switch-config-tool.git
    ```
 3. Install required dependencies:
    ```bash
