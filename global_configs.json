@@ -1,0 +1,15 @@
+{
+  "hostname": "",
+  "enable_secret": "",
+  "line_password": "",
+  "vty_ssh": true,
+  "vty_telnet": true,
+  "pwd_encrypt": true,
+  "no_domain_lookup": true,
+  "vlans": {},
+  "svi_interface": "Vlan1",
+  "svi_ip": "",
+  "svi_mask": "255.255.255.0",
+  "svi_desc": "",
+  "gateway_ip": ""
+}
