@@ -64,7 +64,6 @@ jobs:
                   [StringStruct(u'CompanyName', u'Network Solutions'),
                    StringStruct(u'FileDescription', u'Cisco Switch Configuration Tool'),
                    StringStruct(u'FileVersion', u'$($version -join '.')'),
-
                    StringStruct(u'InternalName', u'CiscoConfigTool'),
                    StringStruct(u'LegalCopyright', u'© 2025 Network Solutions'),
                    StringStruct(u'OriginalFilename', u'CiscoConfigTool.exe'),
