@@ -33,13 +33,7 @@ jobs:
 
     - name: Build executable
       run: |
-        pyinstaller --noconfirm --onefile --windowed \
-          --add-data "port_configs.json;." \
-          --add-data "global_configs.json;." \
-          --name "CiscoConfigTool" \
-          --icon "NONE" \
-          --version-file "version_info.txt" \
-          CiscoConfigTool_v5.py
+        pyinstaller --noconfirm --onefile --windowed --add-data "port_configs.json;." --add-data "global_configs.json;." --name "CiscoConfigTool" --icon "NONE" --version-file "version_info.txt" CiscoConfigTool_v5.py
 
     - name: Create Release
       id: create_release
