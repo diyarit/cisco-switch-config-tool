@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  pull_request:
   workflow_dispatch:
     inputs:
       version:
@@ -87,16 +88,17 @@ VSVersionInfo(
         Write-Host "Generated version_info.txt for version $fileVersionStr"
 
     - name: Build executable with PyInstaller
+      shell: pwsh
       run: |
-        pyinstaller --noconfirm `
-                    --onefile `
-                    --windowed `
-                    --icon=NONE `
-                    --version-file version_info.txt `
-                    --add-data "port_configs.json;." `
-                    --add-data "global_configs.json;." `
-                    --name CiscoConfigTool `
-                    CiscoConfigTool_v5.py
+        pyinstaller --noconfirm \
+          --onefile \
+          --windowed \
+          --icon=NONE \
+          --version-file version_info.txt \
+          --add-data "port_configs.json;." \
+          --add-data "global_configs.json;." \
+          --name CiscoConfigTool \
+          CiscoConfigTool_v5.py
 
     - name: Create Release
       id: create_release
