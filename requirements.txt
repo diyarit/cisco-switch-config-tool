@@ -1,5 +1,10 @@
+# Core dependencies
 tkinter
-re
-os
-json
-pyinstaller
+
+# Standard libraries (no need to install)
+# re
+# os
+# json
+
+# Build dependencies
+pyinstaller==6.3.0
