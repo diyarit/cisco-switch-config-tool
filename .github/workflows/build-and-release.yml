@@ -18,7 +18,8 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -29,7 +30,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller
-        pip install tk
+        pip install tkinter
 
     - name: Create empty config files
       run: |
@@ -42,8 +43,9 @@ jobs:
       run: |
         $version = "${{ github.event.inputs.version }}"
         if (-not $version) { $version = "${{ github.ref_name }}" }
-        $version = $version -replace '^v','' -split '\.' 
+        $version = $version -replace '^v','' -split '\.'
         while ($version.Length -lt 4) { $version += '0' }
+        
         $versionInfo = @"
         VSVersionInfo(
           ffi=FixedFileInfo(
@@ -68,18 +70,24 @@ jobs:
                    StringStruct(u'LegalCopyright', u'© 2025 Network Solutions'),
                    StringStruct(u'OriginalFilename', u'CiscoConfigTool.exe'),
                    StringStruct(u'ProductName', u'Cisco Configuration Tool'),
-                   StringStruct(u'ProductVersion', u'$($version -join '.')'))])])]
+                   StringStruct(u'ProductVersion', u'$($version -join '.')')
+                  ]
+                )
+              ]
+            )
+          ]
         )
 "@
         Set-Content -Path "version_info.txt" -Value $versionInfo
 
     - name: Build executable
       run: |
-        pyinstaller --noconfirm --onefile --windowed --add-data "port_configs.json;." --add-data "global_configs.json;." --name "CiscoConfigTool" --icon "NONE" --version-file "version_info.txt" CiscoConfigTool_v5.py
+        pyinstaller --noconfirm --onefile --windowed --add-data "port_configs.json;." --add-data "global_configs.json;." --name "CiscoConfigTool" --version-file "version_info.txt" CiscoConfigTool_v5.py
 
     - name: Create Release
       id: create_release
       uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
       with:
         name: Cisco Config Tool ${{ github.ref_name }}
         body: |
