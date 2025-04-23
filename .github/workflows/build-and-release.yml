@@ -40,17 +40,20 @@ jobs:
         Set-Content -Path "global_configs.json" -Value "{}"
 
     - name: Create version info file
+      shell: pwsh
       run: |
         $version = "${{ github.event.inputs.version }}"
         if (-not $version) { $version = "${{ github.ref_name }}" }
         $version = $version -replace '^v','' -split '\.'
         while ($version.Length -lt 4) { $version += '0' }
         
-        $versionInfo = @"
+        $fileVersion = $version -join '.'
+        
+        @"
         VSVersionInfo(
           ffi=FixedFileInfo(
-            filevers=($version[0], $version[1], $version[2], $version[3]),
-            prodvers=($version[0], $version[1], $version[2], $version[3]),
+            filevers=($($version[0]), $($version[1]), $($version[2]), $($version[3])),
+            prodvers=($($version[0]), $($version[1]), $($version[2]), $($version[3])),
             mask=0x3f,
             flags=0x0,
             OS=0x40004,
@@ -65,20 +68,18 @@ jobs:
                   u'040904B0',
                   [StringStruct(u'CompanyName', u'Network Solutions'),
                    StringStruct(u'FileDescription', u'Cisco Switch Configuration Tool'),
-                   StringStruct(u'FileVersion', u'$($version -join '.')'),
+                   StringStruct(u'FileVersion', u'$fileVersion'),
                    StringStruct(u'InternalName', u'CiscoConfigTool'),
                    StringStruct(u'LegalCopyright', u'© 2025 Network Solutions'),
                    StringStruct(u'OriginalFilename', u'CiscoConfigTool.exe'),
                    StringStruct(u'ProductName', u'Cisco Configuration Tool'),
-                   StringStruct(u'ProductVersion', u'$($version -join '.')')
-                  ]
+                   StringStruct(u'ProductVersion', u'$fileVersion')]
                 )
               ]
             )
           ]
         )
-"@
-        Set-Content -Path "version_info.txt" -Value $versionInfo
+"@ | Set-Content -Path "version_info.txt"
 
     - name: Build executable
       run: |
