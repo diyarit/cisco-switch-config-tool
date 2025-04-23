@@ -18,93 +18,92 @@ jobs:
       contents: write
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pyinstaller
-        pip install tkinter
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install tkinter
 
-    - name: Create empty config files
-      run: |
-        New-Item -Path "port_configs.json" -ItemType File -Force
-        New-Item -Path "global_configs.json" -ItemType File -Force
-        Set-Content -Path "port_configs.json" -Value "{}"
-        Set-Content -Path "global_configs.json" -Value "{}"
+      - name: Create empty config files
+        run: |
+          New-Item -Path "port_configs.json" -ItemType File -Force
+          New-Item -Path "global_configs.json" -ItemType File -Force
+          Set-Content -Path "port_configs.json" -Value "{}"
+          Set-Content -Path "global_configs.json" -Value "{}"
 
-    - name: Create version info file
-      shell: pwsh
-      run: |
-        $version = "${{ github.event.inputs.version }}"
-        if (-not $version) { $version = "${{ github.ref_name }}" }
-        $version = $version -replace '^v','' -split '\.'
-        while ($version.Length -lt 4) { $version += '0' }
-        
-        $fileVersion = $version -join '.'
-        
-        @"
-        VSVersionInfo(
-          ffi=FixedFileInfo(
-            filevers=($($version[0]), $($version[1]), $($version[2]), $($version[3])),
-            prodvers=($($version[0]), $($version[1]), $($version[2]), $($version[3])),
-            mask=0x3f,
-            flags=0x0,
-            OS=0x40004,
-            fileType=0x1,
-            subtype=0x0,
-            date=(0, 0)
-          ),
-          kids=[
-            StringFileInfo(
-              [
-                StringTable(
-                  u'040904B0',
-                  [StringStruct(u'CompanyName', u'Network Solutions'),
-                   StringStruct(u'FileDescription', u'Cisco Switch Configuration Tool'),
-                   StringStruct(u'FileVersion', u'$fileVersion'),
-                   StringStruct(u'InternalName', u'CiscoConfigTool'),
-                   StringStruct(u'LegalCopyright', u'© 2025 Network Solutions'),
-                   StringStruct(u'OriginalFilename', u'CiscoConfigTool.exe'),
-                   StringStruct(u'ProductName', u'Cisco Configuration Tool'),
-                   StringStruct(u'ProductVersion', u'$fileVersion')]
-                )
-              ]
-            )
-          ]
-        )
-"@ | Set-Content -Path "version_info.txt"
+      - name: Create version info file
+        shell: pwsh
+        run: |
+          $version = "${{ github.event.inputs.version }}"
+          if (-not $version) { $version = "${{ github.ref_name }}" }
+          $version = $version -replace '^v','' -split '\.'
+          while ($version.Length -lt 4) { $version += '0' }
+          $fileVersion = $version -join '.'
+          $versionInfo = @"
+          VSVersionInfo(
+            ffi=FixedFileInfo(
+              filevers=($($version[0]), $($version[1]), $($version[2]), $($version[3])),
+              prodvers=($($version[0]), $($version[1]), $($version[2]), $($version[3])),
+              mask=0x3f,
+              flags=0x0,
+              OS=0x40004,
+              fileType=0x1,
+              subtype=0x0,
+              date=(0, 0)
+            ),
+            kids=[
+              StringFileInfo(
+                [
+                  StringTable(
+                    u'040904B0',
+                    [StringStruct(u'CompanyName', u'Network Solutions'),
+                     StringStruct(u'FileDescription', u'Cisco Switch Configuration Tool'),
+                     StringStruct(u'FileVersion', u'$fileVersion'),
+                     StringStruct(u'InternalName', u'CiscoConfigTool'),
+                     StringStruct(u'LegalCopyright', u'© 2025 Network Solutions'),
+                     StringStruct(u'OriginalFilename', u'CiscoConfigTool.exe'),
+                     StringStruct(u'ProductName', u'Cisco Configuration Tool'),
+                     StringStruct(u'ProductVersion', u'$fileVersion')]
+                  )
+                ]
+              )
+            ]
+          )
+          "@
+          Set-Content -Path "version_info.txt" -Value $versionInfo
 
-    - name: Build executable
-      run: |
-        pyinstaller --noconfirm --onefile --windowed --add-data "port_configs.json;." --add-data "global_configs.json;." --name "CiscoConfigTool" --version-file "version_info.txt" CiscoConfigTool_v5.py
+      - name: Build executable
+        run: |
+          pyinstaller --noconfirm --onefile --windowed --add-data "port_configs.json;." --add-data "global_configs.json;." --name "CiscoConfigTool" --version-file "version_info.txt" CiscoConfigTool_v5.py
 
-    - name: Create Release
-      id: create_release
-      uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
-      with:
-        name: Cisco Config Tool ${{ github.ref_name }}
-        body: |
-          # Cisco Configuration Tool Release ${{ github.ref_name }}
-          
-          ## What's New
-          - Automated release build
-          - Windows executable package
-          
-          ## Installation
-          1. Download the executable file
-          2. Run the program directly - no installation needed
-          
-          ## Notes
-          - Windows 10/11 compatible
-          - No Python installation required
-        files: dist/CiscoConfigTool.exe
-        draft: false
-        prerelease: false
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name: Cisco Config Tool ${{ github.ref_name }}
+          body: |
+            # Cisco Configuration Tool Release ${{ github.ref_name }}
+            
+            ## What's New
+            - Automated release build
+            - Windows executable package
+            
+            ## Installation
+            1. Download the executable file
+            2. Run the program directly - no installation needed
+            
+            ## Notes
+            - Windows 10/11 compatible
+            - No Python installation required
+          files: dist/CiscoConfigTool.exe
+          draft: false
+          prerelease: false
