@@ -86,11 +86,11 @@ jobs:
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: Cisco Config Tool ${{ github.ref_name }}
+          name: Cisco Config Tool ${{ github.event.inputs.version || github.ref_name }}
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
           body: |
-            # Cisco Configuration Tool Release ${{ github.ref_name }}
+            # Cisco Configuration Tool Release ${{ github.event.inputs.version || github.ref_name }}
             
             ## What's New
             - Automated release build
