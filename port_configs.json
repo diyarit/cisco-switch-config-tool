@@ -1,1 +1,42 @@
-{}
+{
+  "1": {
+    "mode": "access",
+    "description": "Standard Access Port",
+    "portfast": true,
+    "qos_trust": false,
+    "data_vlan": "10",
+    "voice_vlan": "100"
+  },
+  "4": {
+    "mode": "access",
+    "description": "Standard Access Port",
+    "portfast": true,
+    "qos_trust": false,
+    "data_vlan": "10",
+    "voice_vlan": "100"
+  },
+  "24": {
+    "mode": "trunk",
+    "description": "Trunk to Switch",
+    "portfast": false,
+    "qos_trust": true,
+    "native_vlan": "10",
+    "allowed_vlans": "ALL"
+  },
+  "8": {
+    "mode": "access",
+    "description": "Voice + Data Port",
+    "portfast": true,
+    "qos_trust": true,
+    "data_vlan": "10",
+    "voice_vlan": "100"
+  },
+  "7": {
+    "mode": "access",
+    "description": "Voice + Data Port",
+    "portfast": true,
+    "qos_trust": true,
+    "data_vlan": "10",
+    "voice_vlan": "100"
+  }
+}

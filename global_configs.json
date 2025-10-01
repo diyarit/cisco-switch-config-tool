@@ -6,7 +6,11 @@
   "vty_telnet": true,
   "pwd_encrypt": true,
   "no_domain_lookup": true,
-  "vlans": {},
+  "vlans": {
+    "1": "VLAN_1",
+    "10": "VLAN_10",
+    "100": "VLAN_100"
+  },
   "svi_interface": "Vlan1",
   "svi_ip": "",
   "svi_mask": "255.255.255.0",
