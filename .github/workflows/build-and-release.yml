@@ -36,7 +36,45 @@ jobs:
           New-Item -Path "port_configs.json" -ItemType File -Force
           New-Item -Path "global_configs.json" -ItemType File -Force
           Set-Content -Path "port_configs.json" -Value "{}"
-          Set-Content -Path "global_configs.json" -Value "{}"
+          $globalConfig = @{
+            "hostname" = ""
+            "enable_secret" = ""
+            "line_password" = ""
+            "vty_ssh" = $true
+            "vty_telnet" = $true
+            "pwd_encrypt" = $true
+            "no_domain_lookup" = $true
+            "vlans" = @{}
+            "svi_interface" = "Vlan1"
+            "svi_ip" = ""
+            "svi_mask" = "255.255.255.0"
+            "svi_desc" = ""
+            "gateway_ip" = ""
+            "stp_mode" = "pvst"
+            "stp_priority" = "32768"
+            "vtp_mode" = "transparent"
+            "vtp_domain" = ""
+            "vtp_password" = ""
+            "snmp_community" = ""
+            "snmp_location" = ""
+            "snmp_contact" = ""
+            "ntp_server" = ""
+            "ntp_source" = ""
+            "poe_enabled" = $true
+            "poe_power_limit" = "15.4"
+            "dhcp_snooping" = $false
+            "dai_enabled" = $false
+            "ip_source_guard" = $false
+            "acl_standard" = @{}
+            "acl_extended" = @{}
+            "qos_trust" = "cos"
+            "storm_control" = @{
+              "broadcast" = @{"enabled" = $false; "threshold" = "80"}
+              "multicast" = @{"enabled" = $false; "threshold" = "80"}
+              "unicast" = @{"enabled" = $false; "threshold" = "80"}
+            }
+          }
+          $globalConfig | ConvertTo-Json -Depth 10 | Set-Content -Path "global_configs.json"
 
       - name: Create version info file
         shell: pwsh
@@ -64,7 +102,7 @@ jobs:
                   StringTable(
                     u'040904B0',
                     [StringStruct(u'CompanyName', u'Network Solutions'),
-                     StringStruct(u'FileDescription', u'Cisco Switch Configuration Tool'),
+                     StringStruct(u'FileDescription', u'Cisco Switch Configuration Tool v6.0 - Professional Network Management'),
                      StringStruct(u'FileVersion', u'$fileVersion'),
                      StringStruct(u'InternalName', u'CiscoConfigTool'),
                      StringStruct(u'LegalCopyright', u'© 2025 Network Solutions'),
@@ -81,7 +119,7 @@ jobs:
 
       - name: Build executable
         run: |
-          pyinstaller --noconfirm --onefile --windowed --add-data "port_configs.json;." --add-data "global_configs.json;." --name "CiscoConfigTool" --version-file "version_info.txt" CiscoConfigTool_v5.py
+          pyinstaller --noconfirm --onefile --windowed --add-data "port_configs.json;." --add-data "global_configs.json;." --name "CiscoConfigTool" --version-file "version_info.txt" CiscoConfigTool_v6.py
 
       - name: Create Release
         id: create_release
@@ -92,17 +130,31 @@ jobs:
           body: |
             # Cisco Configuration Tool Release ${{ github.event.inputs.version || github.ref_name }}
             
-            ## What's New
-            - Automated release build
-            - Windows executable package
+            ## 🚀 What's New in v6.0.0
+            - **Automatic VLAN Detection**: Intelligently detects and adds VLANs referenced in port configurations
+            - **Smart VLAN Naming**: Automatic meaningful VLAN names (Data, Voice, Wireless, Guest, Management)
+            - **Enhanced Security Features**: Port security, DHCP snooping, DAI, IP source guard
+            - **Advanced Switching**: STP/RSTP/MSTP, VTP management, EtherChannel support
+            - **Network Management**: SNMP, NTP, PoE management, QoS configuration
+            - **Professional Configuration**: Clean startup, comprehensive CLI generation
             
-            ## Installation
+            ## 📦 Installation
             1. Download the executable file
             2. Run the program directly - no installation needed
             
-            ## Notes
+            ## ✨ Features
+            - **Intuitive Port Management**: Visual port selection interface
+            - **Bulk Port Configuration**: Configure multiple ports simultaneously
+            - **Access & Trunk Ports**: Support for both port types
+            - **Security Configuration**: Port security, DHCP snooping, DAI
+            - **Advanced Protocols**: STP, VTP, EtherChannel, SNMP, NTP
+            - **Template System**: Reusable configuration templates
+            - **Professional CLI Generation**: Complete Cisco switch configurations
+            
+            ## 📋 System Requirements
             - Windows 10/11 compatible
             - No Python installation required
+            - No additional dependencies needed
           files: dist/CiscoConfigTool.exe
           draft: false
           prerelease: false
